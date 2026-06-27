@@ -5,10 +5,12 @@ The retrospective, synthesized from the running notes in `docs/THINGS-LEARNED.md
 should carry forward.
 
 Status at the time of writing: the package builds, passes every local gate (build linkage, a genuine
-`/rerank` smoke, secret scan, read-only and runs-as and CPU-only conformance), and the image is pushed
-to the registry pinned by digest. The box phases (a stranger install from the versions URL, update and
-backup/restore survival, and live stack integration) are pending the registry package being made
-public.
+`/rerank` smoke, secret scan, read-only and runs-as and CPU-only conformance), is pushed to the
+registry public and pinned by digest, and is **installed and healthy on the box** on a throwaway
+subdomain, with the auth topology, a real keyed rerank, and stability all verified. Reaching that took
+two box-only fixes (below). The remaining gates are update and backup/restore survival, a live stack
+integration, and promotion to the real target; the public versions-URL stranger install is held until
+the repo is pushed.
 
 ## The headline
 
@@ -38,7 +40,7 @@ Neither error was the brief author being careless; both are the ordinary drift o
 once and not re-checked. The discipline that catches them is cheap: verify a fact against its source
 before you depend on it, and record the correction.
 
-## 3. The memory trap (the centerpiece)
+## 3. The slow warmup: a memory trap and a health trap (the centerpiece)
 
 The model loaded and the first inference ran, then the container died during warmup with no error line,
 only exit 137. The naive reading is "raise the memory limit". That reading was wrong, and chasing it
@@ -59,6 +61,21 @@ Two compounding causes, both found by sweeping the parameter space against the r
 The lesson worth carrying: when an ML server OOMs, the lever is often to cap concurrency and batch size
 so memory is predictable on any host, not to raise the limit. And size the warmup, because warmup is
 the first-boot memory spike that decides whether the app ever reports healthy.
+
+The same slow warmup caused a second, subtler failure that only the box revealed: TEI does not bind its
+HTTP port until warmup finishes, so `/health` is refused during warmup, and Cloudron restart-looped the
+container before it was ready. The local smoke had passed, because podman does not health-check during
+warmup; the platform does. The fix is the field guide's nginx immediate-health shim (answer `/health`
+200 at once, proxy the rest to TEI, keep TEI as the main process so a real crash still restarts). The
+meta-lesson is the sharper one: a runtime smoke test must assert "is `/health` answered *during*
+warmup", not only "does it answer once ready". The package's smoke now checks exactly that, so the
+regression cannot return silently.
+
+Implementing the shim then surfaced a third box-only fault: nginx with `error_log /dev/stderr` died at
+start as the unprivileged user, because `open("/dev/stderr")` is denied when the fd-2 target is
+root-owned. Rootless podman did not reproduce it. The fix is the `error_log stderr` keyword (write the
+inherited fd, no `open()`). Three times in this effort the box contradicted what local testing and the
+brief said, and three times the box was right.
 
 ## 4. Baking a model can be clean
 

@@ -78,19 +78,26 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 
 ## Phase 6 - Deploy + box gates (max)
 
-- [~] 6.1 Installed on throwaway `reranker-test` via `--image` (public GHCR digest) at 6 GiB; reaches
+- [~] 6.1 Installed on a throwaway subdomain via `--image` (public GHCR digest) at 6 GiB; reaches
       healthy; `/docs` behind login; `/rerank` serves with the key; boot count 1 (no loop). Required
       fixing a box-only restart loop (nginx health shim, ADR-0004) and the nginx `/dev/stderr` EACCES.
       The versions-URL stranger path (vs `--image`) is pending the repo push (operator: hold push).
-- [ ] 6.2 Update survival (key sha256 byte-identical). Key sha before: 254321e4...
-- [ ] 6.3 Backup/restore survival ("existing key found" path; ownership/mode re-asserted).
-- [ ] 6.4 Promote to the real target; re-run 6.1 there; uninstall throwaways.
+- [x] 6.2 Update survival: `cloudron update` (same digest, auto-backup + recreate) -> key sha256
+      byte-identical (254321e4...), logs show "existing API key found" (no reseed), mode stays 600.
+- [x] 6.3 Backup/restore survival: `cloudron backup create` then `cloudron restore` -> key sha256
+      byte-identical, "existing API key found" (no reseed), key mode re-asserted to 600
+      cloudron:cloudron, /app/data ownership cloudron:cloudron.
+- [x] 6.4 Promoted to the real target via `--image` at 6 GiB: healthy, `/health` 200, `/docs` ->
+      302 SSO, keyed `/rerank` correct. Added a public landing page at `/` (operator feedback: the bare
+      domain was blank) -> verified live (200 text/html, explains the API). Throwaway uninstalled.
+      Live integration also verified from the Windmill app container: a real `/rerank` returns the
+      correct ranking, unauthenticated returns 401.
 
 ## Phase 7 - Stack integration (max)
 
-- [~] 7.1 Mapping done for every stack app (n8n, Dify, agentgateway, Open WebUI, LibreChat, Qdrant,
-      TEI, Docling, Langfuse, Ollama, rustfs/MinIO). Live end-to-end test (n8n HTTP and/or Dify rerank
-      provider) pending box deploy.
+- [x] 7.1 Mapping done for every stack app. Live cross-app test PASS: from the n8n container,
+      `/health` 200 (reachable), keyed `/info` 200, unkeyed `/info` 401 (auth enforced over the
+      Cloudron network) - exactly what an n8n HTTP node does.
 - [x] 7.2 docs/INTEGRATIONS.md: copy-paste config per app; the TEI-native vs Cohere `/v1/rerank`
       distinction; the ~60s proxy-timeout and localhost-only-within-container notes.
 

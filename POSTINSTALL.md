@@ -1,8 +1,10 @@
-### This is a reranking API, not a web page
+### This is a reranking API, not a web app
 
-There is no dashboard to open. The app serves `POST /rerank` over HTTP. Visiting the domain in a
-browser lands on the Swagger docs (behind login), not a UI. The model `BAAI/bge-reranker-v2-m3` is
-baked into the image, so the app is ready within seconds; there is no first-boot download.
+There is no dashboard to use. The app serves `POST /rerank` over HTTP. Opening the app's domain in a
+browser shows a short **landing page** that says what the API is and how to call it (no login needed to
+read it); the interactive Swagger docs are at `/docs` (behind your Cloudron login). The model
+`BAAI/bge-reranker-v2-m3` is baked into the image, so the app reports healthy within seconds and serves
+its first rerank after a brief warmup (well under a minute); there is no first-boot download.
 
 ### 1. Get your API key
 

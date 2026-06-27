@@ -41,4 +41,5 @@ slice client-side.)
 
 - CPU inference, amd64 only (the TEI CPU build bundles Intel MKL; there is no arm64 CPU image).
 - The model is fixed (baked). For text embeddings, run the companion TEI embeddings app instead.
-- This is an API, not a web page. Visiting the domain in a browser lands on the docs, not a dashboard.
+- This is an API, not a web app. Opening the domain shows a short landing page describing the API and
+  how to call it; the interactive Swagger docs are at `/docs` (behind login).

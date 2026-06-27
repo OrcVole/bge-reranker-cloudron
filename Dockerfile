@@ -95,6 +95,7 @@ RUN set -eux; \
 #    not invalidate the large model layer above.
 COPY start.sh   /app/code/start.sh
 COPY nginx.conf /app/code/nginx.conf
+COPY www/       /app/code/www/
 COPY LICENSE    /app/code/LICENSE
 # nginx ships in cloudron/base; it fronts TEI to answer /health during warmup. Fail the build if it
 # is ever absent from the base, and validate the proxy config syntax.
