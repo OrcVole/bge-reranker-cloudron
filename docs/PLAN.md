@@ -78,10 +78,10 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 
 ## Phase 6 - Deploy + box gates (max)
 
-- [~] 6.1 Installed on a throwaway subdomain via `--image` (public GHCR digest) at 6 GiB; reaches
-      healthy; `/docs` behind login; `/rerank` serves with the key; boot count 1 (no loop). Required
-      fixing a box-only restart loop (nginx health shim, ADR-0004) and the nginx `/dev/stderr` EACCES.
-      The versions-URL stranger path (vs `--image`) is pending the repo push (operator: hold push).
+- [x] 6.1 Stranger install from the public versions URL on a throwaway: reaches healthy, landing page
+      200 text/html, `/health` 200, `/docs` 302 SSO, `io.github.orcvole.bgereranker@1.0.0`. (Earlier
+      box install via `--image` also passed; reaching healthy required the nginx health shim, ADR-0004,
+      and the nginx `/dev/stderr` EACCES fix.) Throwaway uninstalled.
 - [x] 6.2 Update survival: `cloudron update` (same digest, auto-backup + recreate) -> key sha256
       byte-identical (254321e4...), logs show "existing API key found" (no reseed), mode stays 600.
 - [x] 6.3 Backup/restore survival: `cloudron backup create` then `cloudron restore` -> key sha256
@@ -111,8 +111,14 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 
 ## Phase 9 - Release hygiene + push (high)
 
-- [ ] 9.1 Final anonymity sweep; local-only docs gitignored; tag a release; push to both remotes.
-- [ ] 9.2 Sign-off: re-run the gate ladder; update this file with evidence; hand-off summary.
+- [x] 9.1 Final anonymity sweep clean (it caught and I fixed a real private-host leak in PLAN.md);
+      local-only docs (STATUS.md, FOUNDATION-PROMPT.md, .anonymize-list) gitignored; tagged v1.0.0;
+      pushed `main` + `v1.0.0` to GitHub (public) and the Forgejo mirror. Raw versions/icon URLs 200.
+- [x] 9.2 Sign-off: full gate ladder green - build linkage, smoke (genuine rerank + key not in logs),
+      secret scan, read-only/runs-as/CPU-only, update survival (key sha identical), backup/restore
+      survival (existing-key path + mode re-assert), anonymous pull by digest, stranger versions-URL
+      install. Plus live n8n and Windmill integration, and a public landing page. Live at the real
+      target. Pending only: 8.3 post venue (operator input).
 
 ---
 
