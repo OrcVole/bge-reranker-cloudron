@@ -1,7 +1,8 @@
 <!--
 Cloudron forum post - App Wishlist template. Persona: OrcVole.
 Anonymity: verified - upstream + github.com/OrcVole public URLs only; no private hosts, emails, or keys.
-SCREENSHOTS to attach: the landing page at /, the Swagger /docs page, and the app tile icon.
+SCREENSHOTS in the repo screenshots/ dir: docs.png (the Swagger /docs page), app-tile.png (the icon in
+the dashboard), overview.png (a branded explainer card).
 -->
 
 * **Title**: BGE Reranker on Cloudron - self-hosted cross-encoder reranking for better RAG
@@ -28,4 +29,4 @@ SCREENSHOTS to attach: the landing page at /, the Swagger /docs page, and the ap
 ---
 
 * **Alternative to / Libhunt link**: https://www.libhunt.com/r/FlagEmbedding - an open, multilingual, Apache-2.0 alternative to the closed Cohere Rerank and Voyage rerank APIs, and to other open rerankers (Jina reranker, mxbai-rerank, the smaller `bge-reranker-base` and `-large`).
-* **Screenshots**: _attach images - the landing page at `/`, the Swagger `/docs` page, and the app tile icon_
+* **Screenshots**: _`screenshots/docs.png` (the Swagger API docs, showing `/rerank`), `screenshots/app-tile.png` (the icon in the dashboard), and `screenshots/overview.png` (a branded explainer card)_

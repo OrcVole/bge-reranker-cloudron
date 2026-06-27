@@ -36,7 +36,8 @@
     "nlp"
   ],
   "mediaLinks": [
-    "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/overview.png"
+    "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/overview.png",
+    "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/docs.png"
   ],
   "website": "https://github.com/OrcVole/bge-reranker-cloudron",
   "documentationUrl": "https://github.com/OrcVole/bge-reranker-cloudron",
