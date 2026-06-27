@@ -43,8 +43,9 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 - [x] 2.1 CloudronManifest.json written: id `io.github.orcvole.bgereranker`, httpPort 8080, addons
       localstorage + proxyAuth `/docs`, memoryLimit 4 GiB (verified fits), healthCheckPath `/health`,
       optionalSso, minBoxVersion 9.1.0, checklist + postInstall, iconUrl/mediaLinks.
-- [~] 2.2 `/rerank` returns TEI's own 401 without/with-wrong key (verified locally, not a 302). No
-      `supportsBearerAuth` on the wall. proxyAuth-on-`/docs` SSO redirect to be confirmed on the box.
+- [x] 2.2 Verified on the box: `/health` 200 open; `/docs` unauth -> 302 to `/login` (proxyAuth SSO
+      wall); `/rerank` unauth -> TEI's own 401 (not a 302), via Cloudron -> nginx -> TEI. No
+      `supportsBearerAuth` on the wall.
 - [x] 2.3 `/health` returns 200 as soon as the listener binds, unauthenticated; ~50s warm boot
       locally with the baked model (no download). Confirm grace window on the box.
 - [x] 2.4 POSTINSTALL.md + checklist: "reranking API, not a web page"; how to read the key; the Bearer
@@ -77,9 +78,11 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 
 ## Phase 6 - Deploy + box gates (max)
 
-- [ ] 6.1 Stranger install on a throwaway subdomain from the versions URL; healthy; icon; `/docs`
-      behind login; `/rerank` serves with the key.
-- [ ] 6.2 Update survival (key sha256 byte-identical).
+- [~] 6.1 Installed on throwaway `reranker-test` via `--image` (public GHCR digest) at 6 GiB; reaches
+      healthy; `/docs` behind login; `/rerank` serves with the key; boot count 1 (no loop). Required
+      fixing a box-only restart loop (nginx health shim, ADR-0004) and the nginx `/dev/stderr` EACCES.
+      The versions-URL stranger path (vs `--image`) is pending the repo push (operator: hold push).
+- [ ] 6.2 Update survival (key sha256 byte-identical). Key sha before: 254321e4...
 - [ ] 6.3 Backup/restore survival ("existing key found" path; ownership/mode re-asserted).
 - [ ] 6.4 Promote to the real target; re-run 6.1 there; uninstall throwaways.
 

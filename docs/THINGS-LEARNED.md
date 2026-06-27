@@ -88,3 +88,28 @@ The synthesized retrospective is `../LESSONS-LEARNED.md`. This file is public an
 - `[upstream]` **TEI tries the ONNX Runtime backend first and logs an ERROR when the model ships only
   safetensors**, then falls back to Candle and works. The ERROR ("`onnx/model.onnx` does not exist")
   reads like a failure but is the normal fallback. A clearer log level would save confusion.
+
+## Phase 6 - box deploy (what only the box surfaced)
+
+- `[packagers]` `[cloudron]` **A server that binds its port only after a long warmup restart-loops on
+  Cloudron, and local podman will not catch it.** TEI does not listen until model warmup finishes
+  (tens of seconds on CPU), so `/health` is refused during warmup and Cloudron restarts the container
+  before it is ready. podman does not health-check during warmup, so the local smoke passed while the
+  box looped. The fix is the field guide's nginx immediate-health shim (answer `/health` 200 at once,
+  proxy the rest to the backend, keep the backend as PID 1 so a real crash still restarts). Lesson:
+  the runtime smoke must include "is `/health` answered during warmup", not just "does it answer once
+  ready". The package's smoke now asserts exactly that.
+
+- `[packagers]` **`error_log /dev/stderr` breaks nginx when it runs as a non-root user on the box.**
+  `open("/dev/stderr")` is denied because the fd-2 target is root-owned, and nginx then fails to start
+  with no obvious symptom except a refused port. Use the `error_log stderr` keyword (writes the
+  inherited fd, no `open()`), which is the standard container pattern. This reproduced only on the box,
+  not under rootless podman, because the fd ownership differs. A second case of "the box wins".
+
+- `[packagers]` **Capture the real exit code of a backgrounded box command.** A wrapper that ends in
+  `tail` reports the tail's exit status, so a failed `cloudron install` looked like success more than
+  once. End the wrapper with `ec=$?; ...; exit $ec`.
+
+- `[packagers]` **Measure warmup memory, not just idle.** Idle was ~3 GB but the warmup peak reached
+  ~5.2 GB at the default batch size, which is what actually decides whether first boot OOMs. Size the
+  memory limit (and the batch budget) to the warmup peak, with headroom.

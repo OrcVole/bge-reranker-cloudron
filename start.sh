@@ -23,7 +23,11 @@ HUB_CACHE="${DATA}/hub"           # HUGGINGFACE_HUB_CACHE (unused at runtime: of
 CACHE_DIR="${DATA}/cache"         # XDG cache
 VERSION="${TEI_VERSION:-unknown}"
 
-HTTP_PORT="${RERANKER_HTTP_PORT:-8080}"
+# The public port (the manifest httpPort) is served by nginx, which answers /health immediately and
+# proxies everything else to TEI on an internal port. These are fixed because nginx.conf references
+# them; they are not operator-tunable.
+PUBLIC_PORT=8080
+TEI_PORT=8081
 # /info reports this as the model name; default to the real repo id rather than the local path.
 SERVED_NAME="${RERANKER_SERVED_MODEL_NAME:-BAAI/bge-reranker-v2-m3}"
 
@@ -36,6 +40,11 @@ echo "==> [start] preparing ${DATA} (hf home, caches, secrets)"
 mkdir -p "${HF_DIR}" "${HUB_CACHE}" "${CACHE_DIR}" "${SECRETS_DIR}"
 chown -R cloudron:cloudron "${DATA}"
 chmod 0700 "${SECRETS_DIR}"
+
+# nginx scratch under /run (a tmpfs, writable); the root filesystem is read-only at runtime.
+NGINX_RUN=/run/nginx
+mkdir -p "${NGINX_RUN}/body" "${NGINX_RUN}/proxy" "${NGINX_RUN}/fastcgi" "${NGINX_RUN}/uwsgi" "${NGINX_RUN}/scgi"
+chown -R cloudron:cloudron "${NGINX_RUN}"
 
 # 2. First run only: generate the API key. One key, no read-only tier. Never clobber an existing key;
 #    it is the user's credential and integrators may have it configured (idempotent seeding).
@@ -119,7 +128,7 @@ fi
 # effective single-input length (auto-truncate trims longer query+passage pairs). Operators who need
 # longer context can raise RERANKER_MAX_BATCH_TOKENS together with memoryLimit.
 MAX_BATCH_TOKENS="${RERANKER_MAX_BATCH_TOKENS:-4096}"
-ARGS=( --model-id "${MODEL_DIR}" --hostname 0.0.0.0 --port "${HTTP_PORT}" \
+ARGS=( --model-id "${MODEL_DIR}" --hostname 127.0.0.1 --port "${TEI_PORT}" \
        --served-model-name "${SERVED_NAME}" --max-batch-tokens "${MAX_BATCH_TOKENS}" )
 [[ -n "${RERANKER_DTYPE:-}" ]]         && ARGS+=( --dtype "${RERANKER_DTYPE}" )
 [[ -n "${RERANKER_AUTO_TRUNCATE:-}" ]] && ARGS+=( --auto-truncate )
@@ -127,10 +136,18 @@ ARGS=( --model-id "${MODEL_DIR}" --hostname 0.0.0.0 --port "${HTTP_PORT}" \
 # 8. Report resolved runtime facts (never the key) and hand off.
 echo "==> [start] model    : ${MODEL_DIR} (baked, offline) as '${SERVED_NAME}'"
 echo "==> [start] api      : POST /rerank {\"query\":..., \"texts\":[...]} with Authorization: Bearer <key>"
-echo "==> [start] http     : 0.0.0.0:${HTTP_PORT} (/health open; /docs behind login)"
+echo "==> [start] http     : nginx 0.0.0.0:${PUBLIC_PORT} -> TEI 127.0.0.1:${TEI_PORT} (/health open from t=0; /docs behind login)"
 echo "==> [start] hf_home  : ${HF_DIR}"
 echo "==> [start] threads  : ${THREADS} (rayon + tokenization; cap ${CAP})"
 echo "==> [start] batch    : max-batch-tokens ${MAX_BATCH_TOKENS}"
 echo "==> [start] api key  : $( [[ -s "${KEYS_ENV}" ]] && echo 'present' || echo 'MISSING' )"
-echo "==> [start] exec text-embeddings-router ${VERSION}"
+
+# Start the immediate-health reverse proxy in the background. It answers /health 200 right away so
+# Cloudron sees the app healthy during TEI's ~45s warmup (TEI binds its port only after warmup, which
+# would otherwise restart-loop the container). Then exec TEI as the main process (PID 1) so signals
+# reach it and its exit stops the container; nginx is a child and dies with it.
+echo "==> [start] starting nginx health proxy on :${PUBLIC_PORT}"
+gosu cloudron:cloudron nginx -c /app/code/nginx.conf &
+
+echo "==> [start] exec text-embeddings-router ${VERSION} (warming up; /rerank available after warmup)"
 exec gosu cloudron:cloudron "${BIN}" "${ARGS[@]}"

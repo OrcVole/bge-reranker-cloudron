@@ -10,6 +10,44 @@ Box-specific evidence lives in the gitignored `STATUS.md`.
 
 ---
 
+## 2026-06-27 - Phase 6: box deploy surfaced a restart loop (warmup vs health grace)
+
+### Corrected (the box surfaced what local testing could not)
+
+- **TEI does not bind its HTTP port until model warmup finishes (~48s on CPU for this model), so
+  `/health` is connection-refused during warmup and Cloudron restart-loops the container.** Measured
+  locally: `/health` returns connection-refused from t=0 and first returns 200 at t=48s, right when TEI
+  logs "Ready". On the box, Cloudron's health check failed on the refused connection and killed and
+  restarted the container roughly every 11s, far short of warmup, an infinite loop. The local smoke
+  test never caught this because podman does not health-check during warmup; only the box did. This is
+  the field guide's slow-start trap (section 9 / gotcha #5-#6), caused by warmup rather than a
+  download.
+- **Fix: an nginx immediate-health reverse proxy** (field guide Appendix B.4). nginx listens on the
+  manifest httpPort (8080) and answers `/health` 200 from t=0, and proxies every other path to TEI on
+  `127.0.0.1:8081`. TEI runs as the container's main process (PID 1 via `exec gosu`), so a real TEI
+  crash still exits the container and Cloudron restarts it; the static `/health` cannot mask a crash.
+  During the warmup window the app reports healthy but `/rerank` returns 502 until TEI is up, which is
+  acceptable for a sub-minute first boot.
+- **nginx `error_log /dev/stderr` fails as the unprivileged user on the box (but not under local
+  podman).** On the box, nginx running as `cloudron` died at start with
+  `[emerg] open("/dev/stderr") failed (13: Permission denied)`: the fd-2 target is root-owned, so
+  `open("/dev/stderr")` is denied for the dropped-privilege user, and nginx silently never bound 8080
+  (the container stayed up on TEI's internal 8081, so it was not a restart loop, just a permanently
+  failing health check). Local rootless podman did not reproduce it because the fd ownership differs.
+  Fix: `error_log stderr` (the keyword writes the already-open inherited fd 2, no `open()`), which is
+  the standard container pattern. Caught only on the box.
+- **Warmup memory peak and the limit.** Measured (cgroup, generous limit): `max_batch_tokens=4096`
+  warmup peaks ~5.2 GB (cache-inclusive) and idles ~3 GB; `=2048` peaks ~3.6 GB; `=1024` ~3.2 GB. The
+  ~5.2 GB peak was too close to the original 4 GiB limit and likely contributed to the box failure.
+  With ample RAM confirmed available, `memoryLimit` is raised to 6 GiB and `max_batch_tokens` kept at
+  4096. (Lower `max_batch_tokens` also shortens warmup: ~35s at 4096, ~13s at 2048, ~6s at 1024 with
+  4 threads.)
+- **Not OOM.** Memory config was identical to the passing local smoke (threads 4, max-batch-tokens
+  4096, 4 GiB) and the entrypoint logged the correct values and "existing API key found"; the restart
+  cause was the refused health connection during warmup, not memory.
+
+---
+
 ## 2026-06-27 - Phase 1 to 4: build and local gates
 
 ### Verified

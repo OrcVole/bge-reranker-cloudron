@@ -4,8 +4,9 @@ A private, self-hosted **reranking API** for Cloudron. It serves
 [`BAAI/bge-reranker-v2-m3`](https://huggingface.co/BAAI/bge-reranker-v2-m3) (a multilingual
 XLM-RoBERTa cross-encoder, Apache-2.0) using Hugging Face
 [Text Embeddings Inference (TEI)](https://github.com/huggingface/text-embeddings-inference), the
-production-grade Rust server. The model weights are **baked into the image**, so the app is ready
-within seconds of install, runs fully offline, and never phones home.
+production-grade Rust server. The model weights are **baked into the image**, so there is no first-boot
+download: the app reports healthy in seconds and serves reranking after a brief model warmup (well
+under a minute), fully offline, and never phones home.
 
 This is a thin, reproducible packaging layer. It does not fork or patch TEI or the model; it adapts
 only the runtime environment to Cloudron's contract.
@@ -97,8 +98,7 @@ The model is fixed (baked). Everything else is tunable through the app's Environ
 |----------|---------|---------|
 | `RERANKER_NUM_THREADS` | capped CPU count | Inference and tokenization threads. More threads is faster but uses more memory. |
 | `RERANKER_MAX_THREADS` | `4` | Upper bound applied to the auto-detected thread count. |
-| `RERANKER_MAX_BATCH_TOKENS` | `4096` | Token budget per batch. Also caps the effective single-input length (longer query plus passage is truncated). |
-| `RERANKER_HTTP_PORT` | `8080` | Listener port. |
+| `RERANKER_MAX_BATCH_TOKENS` | `4096` | Token budget per batch. Also caps the effective single-input length (longer query plus passage is truncated) and the warmup time and memory. |
 | `RERANKER_SERVED_MODEL_NAME` | `BAAI/bge-reranker-v2-m3` | Name reported by `/info`. |
 | `RERANKER_DTYPE` | unset | Override the compute dtype (advanced). |
 | `RERANKER_AUTO_TRUNCATE` | on (TEI default) | Truncate over-length inputs rather than rejecting them. |
@@ -110,9 +110,19 @@ carries roughly half a gigabyte of working memory, so the package caps the defau
 and bounds the MKL/OpenMP pool, and it sets a frugal `max_batch_tokens` (4096) because TEI's upstream
 default would allocate gigabytes of attention scratch during warmup and OOM the app on first boot.
 
-With the defaults the app idles around 2 GB and `memoryLimit` is set to 4 GiB. To rerank longer
-passages or run more threads, raise `RERANKER_MAX_BATCH_TOKENS` and/or `RERANKER_NUM_THREADS` and
-raise the app's memory limit to match.
+With the defaults the app idles around 3 GB and warmup peaks higher, so `memoryLimit` is set to 6 GiB.
+To rerank longer passages or run more threads, raise `RERANKER_MAX_BATCH_TOKENS` and/or
+`RERANKER_NUM_THREADS` and raise the app's memory limit to match. A lower `RERANKER_MAX_BATCH_TOKENS`
+also makes the warmup faster and lighter.
+
+### Startup and health
+
+TEI does not bind its port until model warmup finishes (tens of seconds on CPU). The package fronts
+TEI with a small nginx reverse proxy that answers `/health` immediately, so Cloudron sees the app
+healthy from the first second and does not restart it during warmup. While warming up, the app is
+healthy but `/rerank` returns `502` until the model is ready (typically well under a minute on first
+boot); after that it serves normally. TEI runs as the container's main process, so a real crash still
+stops and restarts the container.
 
 ### Slow or large batches
 

@@ -131,13 +131,16 @@ and never echoed to logs.
 TEI is configured by command-line flags and their environment equivalents; there is no operator config
 file to seed. `start.sh` owns the configuration:
 
-- **Package-forced** (operator cannot override): the listen host (`--hostname 0.0.0.0`, because the
-  container's `HOSTNAME` is the container id) and port, the API key, the baked `--model-id`, the
-  caches under `/app/data`, and offline mode (`HF_HUB_OFFLINE=1`, telemetry disabled).
-- **Operator-tunable** through the app Environment: the optional `RERANKER_REVISION`, `RERANKER_DTYPE`,
-  `RERANKER_AUTO_TRUNCATE`, `RERANKER_SERVED_MODEL_NAME`, `RERANKER_NUM_THREADS`, `RERANKER_HTTP_PORT`.
-  The thread pool defaults to the cgroup CPU allotment. (The model itself is fixed: it is baked. An
-  operator who wants a different model uses the embeddings TEI package or a different install.)
+- **Package-forced** (operator cannot override): the ports (nginx serves the manifest httpPort 8080
+  and answers `/health`; TEI binds `127.0.0.1:8081` with `--hostname 127.0.0.1`, because the
+  container's `HOSTNAME` is the container id), the API key, the baked `--model-id`, the caches under
+  `/app/data`, offline mode (`HF_HUB_OFFLINE=1`, telemetry disabled), and a frugal `--max-batch-tokens`
+  default.
+- **Operator-tunable** through the app Environment: the optional `RERANKER_DTYPE`,
+  `RERANKER_AUTO_TRUNCATE`, `RERANKER_SERVED_MODEL_NAME`, `RERANKER_NUM_THREADS`, `RERANKER_MAX_THREADS`
+  (thread cap, default 4), `RERANKER_MAX_BATCH_TOKENS` (default 4096). The thread pool defaults to the
+  cgroup CPU allotment, capped. (The model itself is fixed: it is baked. An operator who wants a
+  different model uses the embeddings TEI package or a different install.)
 
 First-run seeding (only the API key) is idempotent: written only when absent, so an update or restart
 never clobbers it.

@@ -6,4 +6,7 @@
   files verified by sha256 at build time. The app is ready within seconds of install, fully offline.
 * Reranking API on POST /rerank, protected by an auto-generated Bearer API key. The /health path is
   open; the Swagger docs at /docs are behind Cloudron single sign-on.
+* TEI is fronted by a small nginx reverse proxy that answers /health immediately, so the app stays
+  healthy during the model warmup (TEI binds its port only after warmup) instead of restart-looping.
+* memoryLimit is 6 GiB to cover the warmup memory peak.
 * Read-only root filesystem, runs as the unprivileged cloudron user, all state under /app/data.
