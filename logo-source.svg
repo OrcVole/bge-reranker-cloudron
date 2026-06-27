@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="BGE Reranker">
+  <title>BGE Reranker</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="7" stdDeviation="11" flood-color="#1e1b4b" flood-opacity="0.30"/>
+    </filter>
+  </defs>
+
+  <!-- rounded-square app tile -->
+  <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#bg)"/>
+
+  <!-- a ranked list of candidate passages; the top bar is the promoted best match (amber),
+       the rest fade down by relevance. The up-arrow is the rerank: the best rises to the top. -->
+  <g filter="url(#sh)">
+    <rect x="176" y="112" width="248" height="52" rx="26" fill="#fbbf24"/>
+    <rect x="176" y="196" width="206" height="52" rx="26" fill="#ffffff" opacity="0.96"/>
+    <rect x="176" y="280" width="226" height="52" rx="26" fill="#ffffff" opacity="0.70"/>
+    <rect x="176" y="364" width="176" height="52" rx="26" fill="#ffffff" opacity="0.48"/>
+  </g>
+
+  <!-- promotion arrow -->
+  <g stroke="#fbbf24" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M118 400 L118 150"/>
+    <path d="M80 196 L118 150 L156 196"/>
+  </g>
+</svg>

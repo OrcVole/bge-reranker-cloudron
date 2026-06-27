@@ -1,0 +1,49 @@
+{
+  "id": "io.github.orcvole.bgereranker",
+  "title": "BGE Reranker",
+  "author": "OrcVole",
+  "tagline": "Self-hosted reranking API (BAAI bge-reranker-v2-m3 on HuggingFace TEI)",
+  "description": "file://DESCRIPTION.md",
+  "changelog": "file://CHANGELOG.md",
+  "icon": "file://logo.png",
+  "version": "1.0.0",
+  "upstreamVersion": "1.9.3",
+  "healthCheckPath": "/health",
+  "httpPort": 8080,
+  "addons": {
+    "localstorage": {},
+    "proxyAuth": {
+      "path": "/docs"
+    }
+  },
+  "memoryLimit": 4294967296,
+  "configurePath": "/docs",
+  "optionalSso": true,
+  "postInstallMessage": "file://POSTINSTALL.md",
+  "checklist": {
+    "apikey": {
+      "message": "Get your API key: open a Terminal for this app (the `>_` button) and run `cat /app/data/.secrets/keys.env`. Send it as `Authorization: Bearer <key>` to `POST /rerank`."
+    },
+    "api": {
+      "message": "This is a reranking API, not a web page. The model `BAAI/bge-reranker-v2-m3` is baked into the image, so the app is ready within seconds of install (no download). Call `POST /rerank` with a `query` and a list of `texts`. The browsable Swagger docs are at `/docs` (behind login)."
+    }
+  },
+  "tags": [
+    "ai",
+    "reranking",
+    "rag",
+    "search",
+    "nlp"
+  ],
+  "mediaLinks": [
+    "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/overview.png"
+  ],
+  "website": "https://github.com/OrcVole/bge-reranker-cloudron",
+  "documentationUrl": "https://github.com/OrcVole/bge-reranker-cloudron",
+  "contactEmail": "OrcVole@users.noreply.github.com",
+  "packagerName": "OrcVole",
+  "packagerUrl": "https://github.com/OrcVole/bge-reranker-cloudron",
+  "manifestVersion": 2,
+  "minBoxVersion": "9.1.0",
+  "iconUrl": "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/logo.png"
+}
