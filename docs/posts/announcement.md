@@ -40,9 +40,12 @@ is fast but returns an approximate shortlist. A cross-encoder reranker reads the
 candidate passage together and scores how well they match, which is much more accurate than first-stage
 similarity. You keep the top few. It is the cheapest large quality win you can add to a RAG pipeline.
 
-**There is no web page.** This is a service, not a website. Opening the domain lands on the Swagger API
-docs at `/docs` (behind your Cloudron login). You use it by calling `POST /rerank`; the response is a
-list of `{index, score}` for machines, not people.
+**What you see when you open it.** This is a service, not a website. Opening the app's domain shows a
+short landing page that says what the API is and how to call it (no login needed to read it). The
+interactive Swagger docs are at `/docs` (behind your Cloudron login), and that is where the dashboard
+"Open" button goes. You use the reranker by calling `POST /rerank` with your API key (read it once from
+the app's Terminal with `cat /app/data/.secrets/keys.env`); the response is a list of `{index, score}`,
+sorted best first, for your code to consume, not a page for people to read.
 
 **What you can do with it.**
 - Sharpen any RAG or search result: retrieve 50 candidates, rerank, keep the best 5 before you send

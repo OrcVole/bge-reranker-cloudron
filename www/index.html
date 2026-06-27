@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BGE Reranker</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+         color: #e5e7eb; background: linear-gradient(135deg, #1e1b4b, #2e1065); min-height: 100vh; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 64px; }
+  h1 { font-size: 30px; margin: 0 0 4px; color: #fff; }
+  .tag { color: #c7d2fe; margin: 0 0 28px; }
+  .card { background: #0b1020; border: 1px solid #3730a3; border-radius: 14px; padding: 18px 20px; margin: 18px 0; }
+  h2 { font-size: 18px; margin: 0 0 10px; color: #fbbf24; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  pre { background: #06080f; border-radius: 10px; padding: 14px; overflow-x: auto; color: #93c5fd; font-size: 13.5px; }
+  a { color: #a5b4fc; }
+  .pill { display: inline-block; background: #fbbf24; color: #1e1b4b; font-weight: 700; border-radius: 999px; padding: 2px 12px; font-size: 13px; }
+  .muted { color: #9ca3af; font-size: 14px; }
+  ul { padding-left: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>BGE Reranker</h1>
+  <p class="tag">A self-hosted reranking <strong>API</strong> &mdash; there is no web app to use here.</p>
+
+  <div class="card">
+    <h2>What this is</h2>
+    <p>It scores how well each candidate passage answers a query, using the cross-encoder
+    <code>BAAI/bge-reranker-v2-m3</code>. It is the second stage of retrieve-then-rerank: a retriever
+    returns a shortlist, this reorders it by true relevance, and you keep the best few.</p>
+  </div>
+
+  <div class="card">
+    <h2>How to use it</h2>
+    <p>Send a query and a list of texts to <span class="pill">POST /rerank</span> with your API key as a
+    Bearer token. You get a relevance score for each text, sorted best first.</p>
+    <pre id="example">curl https://YOUR-APP/rerank \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H 'content-type: application/json' \
+  -d '{"query":"what is panda?","texts":["hi","The giant panda is a bear endemic to China."]}'</pre>
+    <p class="muted">Get your key from the app's Terminal (the <code>&gt;_</code> button in the Cloudron
+    dashboard): <code>cat /app/data/.secrets/keys.env</code></p>
+  </div>
+
+  <div class="card">
+    <h2>Endpoints</h2>
+    <ul>
+      <li><code>POST /rerank</code> &mdash; the reranking API (Bearer key).</li>
+      <li><a href="/docs"><code>/docs</code></a> &mdash; interactive API documentation (Cloudron login required).</li>
+      <li><code>/health</code> &mdash; liveness check (open).</li>
+    </ul>
+  </div>
+
+  <p class="muted">Self-hosted, offline, CPU. Unofficial community package, not affiliated with BAAI or
+  Hugging Face.</p>
+</div>
+<script>
+  try { document.getElementById('example').textContent =
+    document.getElementById('example').textContent.replace('https://YOUR-APP', location.origin); } catch (e) {}
+</script>
+</body>
+</html>

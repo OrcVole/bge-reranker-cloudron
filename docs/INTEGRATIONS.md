@@ -25,6 +25,7 @@ Auth for every route except `/health` is `Authorization: Bearer YOUR_KEY`.
 | App | Consumes a reranker? | How | Dialect |
 |-----|----------------------|-----|---------|
 | **n8n** | yes | HTTP Request node to `/rerank` | TEI-native (you build the body) |
+| **Windmill** | yes | HTTP from a script or flow step (verified end to end) | TEI-native (you build the body) |
 | **Dify** | yes | "Text Embedding Inference" model provider, add a Rerank model | TEI-native |
 | **agentgateway** | as a router | expose `/rerank` as an HTTP/MCP backend; it does not rerank itself | passthrough |
 | **Open WebUI** | not externally | its RAG reranker is a local model, not an external API (current versions) | n/a |
@@ -49,6 +50,43 @@ An **HTTP Request** node:
 
 A typical flow: retrieve candidates (Qdrant search, or a keyword search), rerank with this node, keep
 the top few, pass them to an LLM (Ollama) node.
+
+## Windmill (script or flow)
+
+Windmill calls the reranker with a normal HTTP request from a script or an HTTP flow step. Verified end
+to end: a real `/rerank` from inside the Windmill container returns the correct ranking, and an
+unauthenticated call returns 401. Store the base URL and the key as Windmill **variables/secrets** (or a
+resource) rather than hardcoding them.
+
+Python:
+
+```python
+import httpx
+def main(query: str, texts: list[str]):
+    r = httpx.post(
+        "https://reranker.example.com/rerank",
+        headers={"Authorization": "Bearer " + "YOUR_KEY"},   # use wmill.get_variable("u/me/reranker_key")
+        json={"query": query, "texts": texts}, timeout=60,
+    )
+    r.raise_for_status()
+    ranked = r.json()                       # [{"index", "score"}], best first
+    return [texts[x["index"]] for x in ranked[:5]]
+```
+
+TypeScript:
+
+```typescript
+export async function main(query: string, texts: string[]) {
+  const r = await fetch("https://reranker.example.com/rerank", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${"YOUR_KEY"}`, "content-type": "application/json" },
+    body: JSON.stringify({ query, texts }),
+  });
+  if (!r.ok) throw new Error(`reranker ${r.status}`);
+  const ranked = await r.json();           // [{index, score}], best first
+  return ranked.slice(0, 5).map((x: any) => texts[x.index]);
+}
+```
 
 ## Dify (native rerank model provider)
 

@@ -25,7 +25,7 @@
       "message": "Get your API key: open a Terminal for this app (the `>_` button) and run `cat /app/data/.secrets/keys.env`. Send it as `Authorization: Bearer <key>` to `POST /rerank`."
     },
     "api": {
-      "message": "This is a reranking API, not a web page. The model `BAAI/bge-reranker-v2-m3` is baked into the image, so the app is ready within seconds of install (no download). Call `POST /rerank` with a `query` and a list of `texts`. The browsable Swagger docs are at `/docs` (behind login)."
+      "message": "This is a reranking API, not a web app. Opening the app's domain shows a short landing page explaining what it is and how to call it; the interactive Swagger docs are at `/docs` (behind login). Call `POST /rerank` with a `query` and a list of `texts` (it returns a relevance score for each). The model `BAAI/bge-reranker-v2-m3` is baked in, so the app is healthy within seconds and serves reranking after a brief warmup (under a minute)."
     }
   },
   "tags": [
@@ -46,5 +46,5 @@
   "manifestVersion": 2,
   "minBoxVersion": "9.1.0",
   "iconUrl": "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/logo.png",
-  "dockerImage": "ghcr.io/orcvole/bge-reranker-cloudron@sha256:73fb86e6d2b8565526ffd3b89015b704ef61d8b0578af81057e0cbcfd908dd96"
+  "dockerImage": "ghcr.io/orcvole/bge-reranker-cloudron@sha256:3891c46d5d3204553ae0cf2e6103b2119963f478245ff8bb2cd0a939c11ea28d"
 }

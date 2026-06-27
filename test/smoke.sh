@@ -97,6 +97,11 @@ sys.exit(0 if (1 in d and 0 in d and d[1] > d[0]) else 1)
 iname="$(curl -s "$B/info" -H "Authorization: Bearer $KEY" | python3 -c 'import sys,json;print(json.load(sys.stdin).get("model_id","?"))' 2>/dev/null)"
 note "/info model_id:" "${iname:-FAIL}"
 
+# The bare domain serves a public landing page (not a blank page), so a browser sees what the API is.
+rootcode=$(curl -s -o /dev/null -w '%{http_code}' "$B/")
+roothtml=$(curl -s "$B/" | grep -ciE 'BGE Reranker|/rerank')
+note "/ landing page:" "$rootcode, content-hits=$roothtml (expect 200, >0)"; { [ "$rootcode" = 200 ] && [ "$roothtml" -gt 0 ]; } || fail=1
+
 # The key must never appear in the logs.
 if "$ENGINE" logs "$NAME" 2>&1 | grep -qF "$KEY"; then note "key in logs:" "LEAKED"; fail=1; else note "key in logs:" "absent (good)"; fi
 
