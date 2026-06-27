@@ -7,8 +7,8 @@ each session and conformance does not regress.
 If you are an AI agent: treat the "Golden rules" as hard constraints. When a request conflicts with
 them, stop and surface the conflict rather than working around it.
 
-This repository packages **`BAAI/bge-reranker-v2-m3`** — an XLM-RoBERTa cross-encoder reranker,
-Apache-2.0, multilingual — served by **Hugging Face Text Embeddings Inference (TEI)** as a
+This repository packages **`BAAI/bge-reranker-v2-m3`** - an XLM-RoBERTa cross-encoder reranker,
+Apache-2.0, multilingual - served by **Hugging Face Text Embeddings Inference (TEI)** as a
 **Cloudron-conformant application**. The model weights are baked into the image; the server is the
 upstream TEI binary, unpatched. The goals, in order: (1) it runs cleanly and securely on Cloudron,
 (2) the repository is public so others can use it, (3) it is written to a standard where the Cloudron
@@ -24,10 +24,10 @@ a separate TEI app. The two are packaged separately because TEI serves one model
 1. **Conformance first.** A Cloudron package is a thin adaptation layer. Adapt the runtime
    environment; never patch the application. A change that writes outside the allowed paths, runs as
    root at runtime, or skips the health check is wrong.
-2. **Pin the upstream version in exactly one place** — the `TEI_VERSION` build ARG. The manifest's
+2. **Pin the upstream version in exactly one place** - the `TEI_VERSION` build ARG. The manifest's
    `upstreamVersion` mirrors it as read-only metadata. Pin the base image and the upstream TEI image
    by `@sha256` digest. Pin the model by Hugging Face commit revision. Never a floating tag
-   (`latest`, `stable`, bare `:1.9` — the bare tag is the CUDA image; use `cpu-`).
+   (`latest`, `stable`, bare `:1.9` - the bare tag is the CUDA image; use `cpu-`).
 3. **Do not break the auth topology.** `proxyAuth` walls human surfaces only, path-scoped to `/docs`.
    The programmatic `/rerank` API stays open at the network layer and is protected by the app's own
    Bearer key. Never put the SSO wall in front of the API (it 302-redirects clients and breaks every

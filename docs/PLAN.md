@@ -8,7 +8,7 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 
 ---
 
-## Phase 0 — Orientation, reconnaissance, plan ratification (max)
+## Phase 0 - Orientation, reconnaissance, plan ratification (max)
 
 - [x] 0.1 Read the canon: brief, field guide v0.1.2 (read in full), Cloudron AI-agent packaging skill
       (installed at `~/.agents/skills/cloudron-app-packaging`, read). Base `cloudron/base:5.0.0`, box
@@ -27,7 +27,7 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 - [x] 0.6 Remotes wired (origin GitHub, mirror Forgejo); `git ls-remote` exit 0 on both (empty
       stubs), no push. Tokens via an inline credential helper, never in URLs or echoed.
 
-## Phase 1 — The image: TEI binary + baked reranker (max)
+## Phase 1 - The image: TEI binary + baked reranker (max)
 
 - [x] 1.1 Dockerfile Shape A built; linkage gate green (`ldd` clean, `--version` runs); TEI `cpu-1.9`
       and base both pinned by digest; MKL + libiomp5 via `cp -L` + `LD_LIBRARY_PATH`.
@@ -38,7 +38,7 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
       bounded); `exec gosu cloudron`. Facts echoed, key never. Verified in smoke + read-only runs.
 - [x] 1.4 `CMD` not `ENTRYPOINT`; `.dockerignore` keeps context minimal; image secret scan clean.
 
-## Phase 2 — Manifest, auth topology, health (max)
+## Phase 2 - Manifest, auth topology, health (max)
 
 - [x] 2.1 CloudronManifest.json written: id `io.github.orcvole.bgereranker`, httpPort 8080, addons
       localstorage + proxyAuth `/docs`, memoryLimit 4 GiB (verified fits), healthCheckPath `/health`,
@@ -50,13 +50,13 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 - [x] 2.4 POSTINSTALL.md + checklist: "reranking API, not a web page"; how to read the key; the Bearer
       header; copy-paste `/rerank` curl; `/docs` location.
 
-## Phase 3 — Icon + store metadata (high)
+## Phase 3 - Icon + store metadata (high)
 
-- [ ] 3.1 Canonical BGE/FlagEmbedding (BAAI) icon, licence-checked, square `logo.png` at the required
-      size; `iconUrl` set. ADR if a neutral alternative is needed.
-- [~] 3.2 DESCRIPTION.md, CHANGELOG.md (bracket format), POSTINSTALL.md done. README.md pending.
+- [x] 3.1 Original neutral icon authored (`logo-source.svg` -> `logo.png` 512x512, 8-bit); BAAI/HF
+      marks avoided for trademark clarity (ADR-0003); `iconUrl` set.
+- [x] 3.2 DESCRIPTION.md, CHANGELOG.md (bracket format), POSTINSTALL.md, README.md all done.
 
-## Phase 4 — Local gates (max)
+## Phase 4 - Local gates (max)
 
 - [x] 4.1 Build linkage gate green (in the Dockerfile build).
 - [x] 4.2 test/smoke.sh PASS: runs as cloudron; key 64 at mode 600; `/health` 200 no-key; `/rerank`
@@ -65,14 +65,17 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 - [x] 4.4 Read-only rootfs boots + reranks; EROFS on `/app/code`; runs as cloudron; 0 CUDA libs;
       Candle CPU backend.
 
-## Phase 5 — Publish the image (high)
+## Phase 5 - Publish the image (high)
 
-- [ ] 5.1 Build, push to GHCR, capture the registry digest via skopeo; pin `dockerImage` by digest.
-- [ ] 5.2 Make the GHCR package public (UI); verify with a logged-out pull.
-- [ ] 5.3 Generate CloudronVersions.json (inlined manifest, contactEmail, mediaLinks, bracket
-      changelog).
+- [x] 5.1 Pushed to ghcr.io/orcvole/bge-reranker-cloudron; registry digest
+      `sha256:3c33f73d0d21b7f08b867a9d8d935a0ebba1b95d74f6598d8a3a10f38fe2c8c3` (skopeo == digestfile);
+      `dockerImage` pinned in manifest and versions file.
+- [~] 5.2 BLOCKED ON OPERATOR: GHCR package is still private (anonymous pull `unauthorized`). No API to
+      flip it; the operator must set it Public in the GitHub Packages UI. Then verify with a logged-out pull.
+- [x] 5.3 CloudronVersions.json generated (inlined manifest, contactEmail, mediaLinks, bracket
+      changelog); version-entry and manifest keys match the proven TEI reference exactly.
 
-## Phase 6 — Deploy + box gates (max)
+## Phase 6 - Deploy + box gates (max)
 
 - [ ] 6.1 Stranger install on a throwaway subdomain from the versions URL; healthy; icon; `/docs`
       behind login; `/rerank` serves with the key.
@@ -80,20 +83,23 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 - [ ] 6.3 Backup/restore survival ("existing key found" path; ownership/mode re-asserted).
 - [ ] 6.4 Promote to the real target; re-run 6.1 there; uninstall throwaways.
 
-## Phase 7 — Stack integration (max)
+## Phase 7 - Stack integration (max)
 
-- [ ] 7.1 Map each stack app to how it consumes the reranker; test one or two end to end.
-- [ ] 7.2 docs/INTEGRATIONS.md with copy-paste config; the ~60s proxy-timeout and localhost-internal
-      notes.
+- [~] 7.1 Mapping done for every stack app (n8n, Dify, agentgateway, Open WebUI, LibreChat, Qdrant,
+      TEI, Docling, Langfuse, Ollama, rustfs/MinIO). Live end-to-end test (n8n HTTP and/or Dify rerank
+      provider) pending box deploy.
+- [x] 7.2 docs/INTEGRATIONS.md: copy-paste config per app; the TEI-native vs Cohere `/v1/rerank`
+      distinction; the ~60s proxy-timeout and localhost-only-within-container notes.
 
-## Phase 8 — Documentation deliverables (max)
+## Phase 8 - Documentation deliverables (max)
 
-- [ ] 8.1 Keep docs/THINGS-LEARNED.md current; segment by audience.
-- [ ] 8.2 LESSONS-LEARNED.md synthesized.
-- [ ] 8.3 Announcement + application-request posts scaffolded (blocked on the operator pointing to the
-      venue/templates).
+- [x] 8.1 docs/THINGS-LEARNED.md kept current from Phase 0, segmented by audience (users, packagers,
+      cloudron, upstream).
+- [x] 8.2 LESSONS-LEARNED.md synthesized (box phases noted as pending).
+- [~] 8.3 Announcement + application-request posts scaffolded in docs/posts/ (modeled on the operator's
+      TEI announcement and Langfuse wishlist styles). BLOCKED ON OPERATOR: confirm target venue/template.
 
-## Phase 9 — Release hygiene + push (high)
+## Phase 9 - Release hygiene + push (high)
 
 - [ ] 9.1 Final anonymity sweep; local-only docs gitignored; tag a release; push to both remotes.
 - [ ] 9.2 Sign-off: re-run the gate ladder; update this file with evidence; hand-off summary.

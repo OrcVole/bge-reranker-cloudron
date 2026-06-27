@@ -1,4 +1,4 @@
-# Secrets and local credentials — never commit. The anonymity sweep (test/secret-scan.sh) checks
+# Secrets and local credentials - never commit. The anonymity sweep (test/secret-scan.sh) checks
 # that none of these leaked into a tracked file before any push.
 *token*.txt
 *.token
