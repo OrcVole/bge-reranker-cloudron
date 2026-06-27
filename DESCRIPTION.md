@@ -1,8 +1,8 @@
 ## BGE Reranker (bge-reranker-v2-m3) on Text Embeddings Inference
 
 A private, self-hosted **reranking API**. It serves the Apache-2.0 model
-[`BAAI/bge-reranker-v2-m3`](https://huggingface.co/BAAI/bge-reranker-v2-m3) — a multilingual
-XLM-RoBERTa cross-encoder — using Hugging Face
+[`BAAI/bge-reranker-v2-m3`](https://huggingface.co/BAAI/bge-reranker-v2-m3) - a multilingual
+XLM-RoBERTa cross-encoder - using Hugging Face
 [Text Embeddings Inference (TEI)](https://github.com/huggingface/text-embeddings-inference), the
 production-grade Rust server. The model weights are **baked into the image**, so the app is ready
 within seconds of install, runs fully offline, and never phones home.

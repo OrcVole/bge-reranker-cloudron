@@ -21,8 +21,8 @@ factual error, corrected here and in `docs/PACKAGING-NOTES.md`.
 This resolves the licence instruction with no ambiguity, because both candidate "applications" are
 Apache-2.0:
 
-- the reranker model `BAAI/bge-reranker-v2-m3` — Apache-2.0;
-- the TEI server whose binary this package vendors — Apache-2.0.
+- the reranker model `BAAI/bge-reranker-v2-m3` - Apache-2.0;
+- the TEI server whose binary this package vendors - Apache-2.0.
 
 Either reading yields Apache-2.0, which is also the licence the sibling TEI package uses.
 

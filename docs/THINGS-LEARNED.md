@@ -3,21 +3,21 @@
 A live log kept from Phase 0 onward, not an end-of-project write-up. Each entry is tagged with its
 audience so it can be lifted into the right place later:
 
-- `[users]` — people installing and calling the reranker.
-- `[packagers]` — anyone packaging an ML server or a TEI model for Cloudron.
-- `[cloudron]` — feedback for the Cloudron maintainers (docs, base image, platform).
-- `[upstream]` — feedback for the reranker model and the TEI server developers.
+- `[users]` - people installing and calling the reranker.
+- `[packagers]` - anyone packaging an ML server or a TEI model for Cloudron.
+- `[cloudron]` - feedback for the Cloudron maintainers (docs, base image, platform).
+- `[upstream]` - feedback for the reranker model and the TEI server developers.
 
 The synthesized retrospective is `../LESSONS-LEARNED.md`. This file is public and anonymized.
 
 ---
 
-## Phase 0 — orientation
+## Phase 0 - orientation
 
 - `[packagers]` **A model card's `text-embeddings-inference` tag is the signal that TEI can serve it.**
   `BAAI/bge-reranker-v2-m3` carries that tag plus `pipeline_tag: text-classification` and an
-  `XLMRobertaForSequenceClassification` architecture. That combination — a sequence-classification
-  cross-encoder tagged for TEI — is exactly what TEI auto-detects and exposes on `/rerank`. Check the
+  `XLMRobertaForSequenceClassification` architecture. That combination - a sequence-classification
+  cross-encoder tagged for TEI - is exactly what TEI auto-detects and exposes on `/rerank`. Check the
   card tags before choosing a serving stack; they tell you whether the canonical, production-grade
   path exists.
 
@@ -27,7 +27,7 @@ The synthesized retrospective is `../LESSONS-LEARNED.md`. This file is public an
   detail to carry on trust. One `curl` to the raw `README.md` frontmatter settled it.
 
 - `[packagers]` **Bake a Hugging Face model with `curl` from the `resolve/<commit>` URL plus a
-  sha256 gate — no Python, no pip, no cache cruft.** The weights and tokenizers are Git-LFS objects
+  sha256 gate - no Python, no pip, no cache cruft.** The weights and tokenizers are Git-LFS objects
   whose LFS `oid` is their sha256, available from the HF tree API. Downloading the exact files from
   `https://huggingface.co/<repo>/resolve/<commit-sha>/<file>` and verifying each big file with
   `sha256sum -c` pins the content reproducibly and keeps the build dependency-light. It also avoids
@@ -49,7 +49,7 @@ The synthesized retrospective is `../LESSONS-LEARNED.md`. This file is public an
   lands on Swagger docs (behind login); there is no dashboard. You call `POST /rerank` with a Bearer
   key. (Expanded in `POSTINSTALL.md`.)
 
-## Phase 1 to 4 — build and local gates
+## Phase 1 to 4 - build and local gates
 
 - `[packagers]` `[upstream]` **A long-context reranker OOM-kills TEI's warmup at the default
   `max_batch_tokens`.** TEI warms the model by running a batch up to `max_batch_tokens` (default

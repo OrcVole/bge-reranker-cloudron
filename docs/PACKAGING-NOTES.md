@@ -10,7 +10,7 @@ Box-specific evidence lives in the gitignored `STATUS.md`.
 
 ---
 
-## 2026-06-27 — Phase 1 to 4: build and local gates
+## 2026-06-27 - Phase 1 to 4: build and local gates
 
 ### Verified
 
@@ -72,7 +72,7 @@ Box-specific evidence lives in the gitignored `STATUS.md`.
 
 ---
 
-## 2026-06-27 — Phase 0 orientation and reconnaissance
+## 2026-06-27 - Phase 0 orientation and reconnaissance
 
 ### Verified
 

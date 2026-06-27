@@ -45,5 +45,6 @@
   "packagerUrl": "https://github.com/OrcVole/bge-reranker-cloudron",
   "manifestVersion": 2,
   "minBoxVersion": "9.1.0",
-  "iconUrl": "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/logo.png"
+  "iconUrl": "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/logo.png",
+  "dockerImage": "ghcr.io/orcvole/bge-reranker-cloudron@sha256:3c33f73d0d21b7f08b867a9d8d935a0ebba1b95d74f6598d8a3a10f38fe2c8c3"
 }

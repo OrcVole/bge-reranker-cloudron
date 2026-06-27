@@ -43,7 +43,7 @@ same MKL/libiomp handling, same auth topology and port move. The deltas are exac
 ### A. Reuse the existing TEI app for reranking
 
 Rejected. TEI serves one model per process, and the operator's existing TEI app is configured to serve
-an **embedding** model (`BAAI/bge-small-en-v1.5`, 384-dim, downloaded on first boot) — verified
+an **embedding** model (`BAAI/bge-small-en-v1.5`, 384-dim, downloaded on first boot) - verified
 against the running box. A dedicated reranker app is the correct topology for a two-stage
 retrieve-then-rerank stack: the embeddings instance turns text into vectors for storage and recall,
 and the reranker instance scores a query against a shortlist. They are separate models and separate
