@@ -106,8 +106,9 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 - [x] 8.1 docs/THINGS-LEARNED.md kept current from Phase 0, segmented by audience (users, packagers,
       cloudron, upstream).
 - [x] 8.2 LESSONS-LEARNED.md synthesized (box phases noted as pending).
-- [~] 8.3 Announcement + application-request posts scaffolded in docs/posts/ (modeled on the operator's
-      TEI announcement and Langfuse wishlist styles). BLOCKED ON OPERATOR: confirm target venue/template.
+- [x] 8.3 Announcement + application-request posts finalized in docs/posts/ to the operator's provided
+      formats (Docling-style announcement; App Wishlist template). Libhunt link verified. Screenshots to
+      attach: the landing page, /docs, the icon.
 
 ## Phase 9 - Release hygiene + push (high)
 
