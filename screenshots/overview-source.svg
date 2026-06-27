@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="DejaVu Sans, Verdana, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e1b4b"/>
+      <stop offset="1" stop-color="#2e1065"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- brand tile (the icon motif, small) -->
+  <g transform="translate(64,64)">
+    <rect width="150" height="150" rx="34" fill="url(#tile)"/>
+    <g transform="translate(0,0)">
+      <rect x="52" y="33" width="73" height="15" rx="7.5" fill="#fbbf24"/>
+      <rect x="52" y="58" width="60" height="15" rx="7.5" fill="#ffffff" opacity="0.96"/>
+      <rect x="52" y="83" width="66" height="15" rx="7.5" fill="#ffffff" opacity="0.7"/>
+      <rect x="52" y="108" width="51" height="15" rx="7.5" fill="#ffffff" opacity="0.48"/>
+      <g stroke="#fbbf24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M34 117 L34 44"/><path d="M22 58 L34 44 L46 58"/>
+      </g>
+    </g>
+  </g>
+
+  <text x="240" y="118" fill="#ffffff" font-size="58" font-weight="700">BGE Reranker</text>
+  <text x="242" y="168" fill="#c7d2fe" font-size="30">Self-hosted cross-encoder reranking API for Cloudron</text>
+  <text x="242" y="206" fill="#a5b4fc" font-size="24">BAAI/bge-reranker-v2-m3 on Text Embeddings Inference, model baked in</text>
+
+  <!-- request/response panel -->
+  <g transform="translate(64,268)">
+    <rect width="1072" height="232" rx="20" fill="#0b1020" stroke="#3730a3" stroke-width="1.5"/>
+    <text x="28" y="48" fill="#fbbf24" font-size="24" font-family="DejaVu Sans Mono, monospace" font-weight="700">POST /rerank</text>
+    <text x="250" y="48" fill="#6b7280" font-size="20" font-family="DejaVu Sans Mono, monospace">Authorization: Bearer &lt;key&gt;</text>
+
+    <text x="28" y="96" fill="#93c5fd" font-size="21" font-family="DejaVu Sans Mono, monospace">request  { "query": "what is panda?",</text>
+    <text x="143" y="124" fill="#93c5fd" font-size="21" font-family="DejaVu Sans Mono, monospace">"texts": ["hi", "The giant panda is a bear endemic to China."] }</text>
+
+    <text x="28" y="180" fill="#86efac" font-size="21" font-family="DejaVu Sans Mono, monospace">response [ { "index": 1, "score": 0.96 },   the panda passage, ranked first</text>
+    <text x="143" y="208" fill="#86efac" font-size="21" font-family="DejaVu Sans Mono, monospace">{ "index": 0, "score": 0.0003 } ]</text>
+  </g>
+
+  <!-- pipeline -->
+  <g transform="translate(64,548)" font-size="26" font-weight="600">
+    <text x="0" y="28" fill="#9ca3af">Retrieve</text>
+    <text x="148" y="28" fill="#6b7280">-&gt;</text>
+    <rect x="196" y="0" width="150" height="40" rx="20" fill="#fbbf24"/>
+    <text x="216" y="28" fill="#1e1b4b">Rerank</text>
+    <text x="372" y="28" fill="#6b7280">-&gt;</text>
+    <text x="420" y="28" fill="#9ca3af">Generate</text>
+    <text x="1072" y="28" fill="#a5b4fc" font-size="22" font-weight="400" text-anchor="end">amd64 - Apache-2.0 - API key + SSO docs</text>
+  </g>
+</svg>
