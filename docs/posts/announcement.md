@@ -1,7 +1,8 @@
 <!--
 Community package announcement post. Persona: OrcVole. Format mirrors the operator's Docling announcement.
 Anonymity: verified - upstream + github.com/OrcVole public URLs only; no private hosts, emails, or keys.
-SCREENSHOTS to attach: the landing page at /, the Swagger /docs page, and the app tile icon.
+SCREENSHOTS in the repo screenshots/ dir: docs.png (the Swagger /docs page), app-tile.png (the icon in
+the dashboard), overview.png (a branded explainer card). A landing-page shot at / can be added too.
 -->
 
 ## 🚀 BGE Reranker: community package now available

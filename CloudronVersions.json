@@ -40,7 +40,8 @@
           "nlp"
         ],
         "mediaLinks": [
-          "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/overview.png"
+          "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/overview.png",
+          "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/screenshots/docs.png"
         ],
         "website": "https://github.com/OrcVole/bge-reranker-cloudron",
         "documentationUrl": "https://github.com/OrcVole/bge-reranker-cloudron",
@@ -52,8 +53,8 @@
         "iconUrl": "https://raw.githubusercontent.com/OrcVole/bge-reranker-cloudron/main/logo.png",
         "dockerImage": "ghcr.io/orcvole/bge-reranker-cloudron@sha256:3891c46d5d3204553ae0cf2e6103b2119963f478245ff8bb2cd0a939c11ea28d"
       },
-      "creationDate": "2026-06-27T19:46:12.298Z",
-      "ts": 1782589572298,
+      "creationDate": "2026-06-27T22:23:01.906Z",
+      "ts": 1782598981906,
       "publishState": "published"
     }
   }
