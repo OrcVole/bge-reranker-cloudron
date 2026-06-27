@@ -35,10 +35,28 @@ echo "== build (cached if unchanged) =="
 rm -f /tmp/reranker-smoke-build.$$; echo "  build ok"
 
 echo "== run (Cloudron-style: root -> start.sh -> gosu cloudron) =="
-"$ENGINE" run -d --name "$NAME" --memory=4g -v "$DATADIR":/app/data:Z -p 127.0.0.1:$PORT:8080 "$IMG" >/dev/null 2>&1
+# --memory matches the manifest memoryLimit (6 GiB), so the smoke exercises the real limit.
+"$ENGINE" run -d --name "$NAME" --memory=6g -v "$DATADIR":/app/data:Z -p 127.0.0.1:$PORT:8080 "$IMG" >/dev/null 2>&1
+
+# The nginx health shim must answer /health 200 during TEI warmup, before TEI binds its port and logs
+# "Ready". This is the regression that restart-looped the app on the box; assert it is fixed.
+hp=""
+for i in $(seq 1 25); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://127.0.0.1:$PORT/health 2>/dev/null)" = 200 ] && { hp=$i; break; }
+  "$ENGINE" ps --format '{{.Names}}' 2>/dev/null | grep -q "^$NAME$" || { echo "  CONTAINER EXITED EARLY"; "$ENGINE" logs "$NAME" 2>&1 | tail -25; exit 1; }
+  sleep 1
+done
+if [ -n "$hp" ]; then
+  rdy="$("$ENGINE" logs "$NAME" 2>&1 | grep -v '==>' | grep -c 'Ready' || true)"
+  note "/health during warmup:" "200 at ~${hp}s (TEI 'Ready' count: ${rdy}, expect 0 = nginx serving)"
+  { [ "$hp" -le 20 ] && [ "$rdy" = 0 ]; } || fail=1
+else
+  note "/health during warmup:" "NEVER (nginx shim broken)"; fail=1
+fi
+
 ready=0
 for i in $(seq 1 120); do
-  "$ENGINE" logs "$NAME" 2>&1 | grep -q 'Ready' && { ready=1; break; }
+  "$ENGINE" logs "$NAME" 2>&1 | grep -v '==>' | grep -q 'Ready' && { ready=1; break; }
   "$ENGINE" ps --format '{{.Names}}' 2>/dev/null | grep -q "^$NAME$" || { echo "  CONTAINER EXITED EARLY"; "$ENGINE" logs "$NAME" 2>&1 | tail -25; exit 1; }
   sleep 2
 done

@@ -93,9 +93,15 @@ RUN set -eux; \
 
 # 5) The entrypoint and the licence. start.sh is COPYed last (it changes most often) so editing it does
 #    not invalidate the large model layer above.
-COPY start.sh /app/code/start.sh
-COPY LICENSE  /app/code/LICENSE
-RUN chmod 0755 /app/code/text-embeddings-router /app/code/start.sh
+COPY start.sh   /app/code/start.sh
+COPY nginx.conf /app/code/nginx.conf
+COPY LICENSE    /app/code/LICENSE
+# nginx ships in cloudron/base; it fronts TEI to answer /health during warmup. Fail the build if it
+# is ever absent from the base, and validate the proxy config syntax.
+RUN chmod 0755 /app/code/text-embeddings-router /app/code/start.sh; \
+    command -v nginx >/dev/null || { echo "FATAL: nginx not on base"; exit 1; }; \
+    mkdir -p /run/nginx/body /run/nginx/proxy /run/nginx/fastcgi /run/nginx/uwsgi /run/nginx/scgi; \
+    nginx -t -c /app/code/nginx.conf
 
 # 6) Record the pinned upstream version, disable telemetry defensively, and label the image.
 ARG TEI_VERSION
