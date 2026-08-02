@@ -1,3 +1,5 @@
+<upstream>1.9.3</upstream>
+
 ## BGE Reranker (bge-reranker-v2-m3) on Text Embeddings Inference
 
 A private, self-hosted **reranking API**. It serves the Apache-2.0 model
