@@ -3,7 +3,6 @@
 *token*.txt
 *.token
 githubtoken.txt
-palladiumtoken.txt
 forgejotoken.txt
 .secrets/
 .env
