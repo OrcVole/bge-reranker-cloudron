@@ -42,9 +42,11 @@ An **HTTP Request** node:
 - URL: `https://reranker.example.com/rerank`
 - Authentication: Generic -> Header Auth -> Name `Authorization`, Value `Bearer YOUR_KEY`
 - Body (JSON):
+
   ```json
   { "query": "{{ $json.query }}", "texts": {{ JSON.stringify($json.candidates) }} }
   ```
+
 - The response is `[{ "index", "score" }]` sorted best-first. Map each `index` back to your candidate
   array, then keep the top N (slice in a Function node; there is no server-side `top_n`).
 

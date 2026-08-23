@@ -16,10 +16,10 @@ the dashboard), overview.png (a branded explainer card). A landing-page shot at 
 
 ### Links
 
-- 🏠 Model card: https://huggingface.co/BAAI/bge-reranker-v2-m3
-- 📦 Upstream model project: https://github.com/FlagOpen/FlagEmbedding
-- 🧱 Upstream server: https://github.com/huggingface/text-embeddings-inference (TEI)
-- 🧰 Cloudron package repo: https://github.com/OrcVole/bge-reranker-cloudron
+- 🏠 Model card: <https://huggingface.co/BAAI/bge-reranker-v2-m3>
+- 📦 Upstream model project: <https://github.com/FlagOpen/FlagEmbedding>
+- 🧱 Upstream server: <https://github.com/huggingface/text-embeddings-inference> (TEI)
+- 🧰 Cloudron package repo: <https://github.com/OrcVole/bge-reranker-cloudron>
 
 No public demo to click, this is an API you self-host. Once installed, opening the app's domain shows a
 small landing page explaining what it is and how to call it, and the interactive OpenAPI docs are at
@@ -155,7 +155,7 @@ A few low-effort things that help packagers a lot:
 - Inherited asks: `--hostname` defaulting to `HOSTNAME` is container-hostile, and an arm64 CPU image would
   broaden where this runs.
 
-Package source and PRs welcome here: https://github.com/OrcVole/bge-reranker-cloudron. Happy to co-maintain.
+Package source and PRs welcome here: <https://github.com/OrcVole/bge-reranker-cloudron>. Happy to co-maintain.
 
 ---
 

@@ -126,6 +126,6 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
 ## Gate ladder (cheapest first; a change is not done until its gate is green)
 
 1. build linkage gate → 2. smoke.sh (genuine rerank + key-not-in-logs) → 3. secret scan →
-4. read-only / runs-as / CPU-only → 5. update survival (key sha256 identical) →
-6. backup/restore survival ("existing key found") → 7. anonymous pull by digest →
-8. stranger install on a throwaway, then uninstall. Update and restore are separate tests.
+2. read-only / runs-as / CPU-only → 5. update survival (key sha256 identical) →
+3. backup/restore survival ("existing key found") → 7. anonymous pull by digest →
+4. stranger install on a throwaway, then uninstall. Update and restore are separate tests.
