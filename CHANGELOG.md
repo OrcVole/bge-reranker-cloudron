@@ -1,6 +1,8 @@
 [1.0.1]
 
 - Upstream text-embeddings-inference 1.9.3 to 1.9.4. The amd64 CPU build is unchanged.
+- Base image cloudron/base 5.0.0 to 5.1.0: the Ubuntu 24.04.4 point release, with its OS security
+  updates. Same Ubuntu 24.04 release and glibc 2.39.
 
 [1.0.0]
 
