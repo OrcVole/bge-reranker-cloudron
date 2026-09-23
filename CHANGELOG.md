@@ -1,3 +1,7 @@
+[1.0.1]
+
+- Upstream text-embeddings-inference 1.9.3 to 1.9.4. The amd64 CPU build is unchanged.
+
 [1.0.0]
 
 - First release.
