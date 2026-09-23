@@ -1,4 +1,4 @@
-`<upstream>1.9.4</upstream>
+<upstream>1.9.4</upstream>
 
 ## BGE Reranker (bge-reranker-v2-m3) on Text Embeddings Inference
 
