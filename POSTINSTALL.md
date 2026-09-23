@@ -10,7 +10,7 @@ its first rerank after a brief warmup (well under a minute); there is no first-b
 
 Open a Terminal for this app (the `>_` button in the dashboard) and run:
 
-```
+```bash
 cat /app/data/.secrets/keys.env
 ```
 
@@ -21,7 +21,7 @@ restore, so you can configure integrators with it once.
 
 Send it as `Authorization: Bearer <key>`:
 
-```
+```bash
 curl https://__APP_DOMAIN__/rerank \
   -H "Authorization: Bearer YOUR_KEY" \
   -H 'content-type: application/json' \
@@ -30,7 +30,7 @@ curl https://__APP_DOMAIN__/rerank \
 
 You get a relevance score for each text, sorted best-first, with the original index:
 
-```
+```text
 [{"index":1,"score":0.99...}, {"index":0,"score":0.00...}]
 ```
 

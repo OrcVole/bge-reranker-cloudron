@@ -122,7 +122,7 @@ reranked context in.
 
 This reranker is the second stage. The first stage and the generator are separate apps:
 
-```
+```text
 Docling (parse) -> TEI embeddings -> Qdrant (store + search)  ==>  shortlist
 shortlist + query -> BGE Reranker (/rerank) -> top results -> Ollama (answer)
 ```
