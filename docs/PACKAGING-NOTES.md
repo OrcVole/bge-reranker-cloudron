@@ -12,6 +12,12 @@ Box-specific evidence lives in the gitignored `STATUS.md`.
 
 ## 2026-06-27 - Phase 6: box deploy surfaced a restart loop (warmup vs health grace)
 
+> **Corrected 2026-09-25.** The diagnosis in this entry is wrong. Cloudron's health check never
+> restarts a container; it only reports status. The loop was most likely an out-of-memory kill during
+> warmup (exit 137), fixed by the 4 to 6 GiB memory raise in the same commit, with Docker restarting the
+> killed container. The nginx shim stays: it keeps the dashboard showing the app healthy during warmup.
+> The entry is kept as written for the record.
+
 ### Corrected (the box surfaced what local testing could not)
 
 - **TEI does not bind its HTTP port until model warmup finishes (~48s on CPU for this model), so

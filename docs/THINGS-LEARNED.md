@@ -99,6 +99,10 @@ The synthesized retrospective is `../LESSONS-LEARNED.md`. This file is public an
   proxy the rest to the backend, keep the backend as PID 1 so a real crash still restarts). Lesson:
   the runtime smoke must include "is `/health` answered during warmup", not just "does it answer once
   ready". The package's smoke now asserts exactly that.
+  **Corrected 2026-09-25:** Cloudron's health check never restarts a container; it only reports
+  status. The box loop was most likely an out-of-memory kill during warmup (exit 137), fixed by the
+  memory raise in the same commit. The shim is still worth having for an honest dashboard, but read
+  the exit code before blaming a health check for a restart.
 
 - `[packagers]` **`error_log /dev/stderr` breaks nginx when it runs as a non-root user on the box.**
   `open("/dev/stderr")` is denied because the fd-2 target is root-owned, and nginx then fails to start

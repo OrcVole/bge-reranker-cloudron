@@ -62,14 +62,20 @@ The lesson worth carrying: when an ML server OOMs, the lever is often to cap con
 so memory is predictable on any host, not to raise the limit. And size the warmup, because warmup is
 the first-boot memory spike that decides whether the app ever reports healthy.
 
-The same slow warmup caused a second, subtler failure that only the box revealed: TEI does not bind its
-HTTP port until warmup finishes, so `/health` is refused during warmup, and Cloudron restart-looped the
-container before it was ready. The local smoke had passed, because podman does not health-check during
-warmup; the platform does. The fix is the field guide's nginx immediate-health shim (answer `/health`
-200 at once, proxy the rest to TEI, keep TEI as the main process so a real crash still restarts). The
-meta-lesson is the sharper one: a runtime smoke test must assert "is `/health` answered *during*
-warmup", not only "does it answer once ready". The package's smoke now checks exactly that, so the
-regression cannot return silently.
+The same slow warmup has a second, box-only effect: TEI does not bind its HTTP port until warmup
+finishes, so `/health` is refused during warmup and the dashboard shows the app as not responding. The
+local smoke had passed, because podman does not health-check at all; the platform does. The package
+fronts TEI with the field guide's nginx immediate-health shim (answer `/health` 200 at once, proxy the
+rest to TEI, keep TEI as the main process so a real crash still restarts), so the app reads healthy
+from the first second and `/rerank` returns 502 until TEI is ready.
+
+A correction worth carrying (2026-09-25): at the time we believed the refused health check made
+Cloudron restart-loop the container. It does not. Cloudron's health check only reports status and never
+restarts a container (confirmed by Cloudron staff). The first-install loop was most likely the warmup
+out-of-memory kill described above (exit 137), which the memory raise in the same commit fixed; Docker
+restarted the killed container. The meta-lesson: when a container restarts, something made it exit, so
+read the exit code before blaming the health check. The shim stays because it is harmless and keeps
+the dashboard honest during warmup, and the smoke still asserts `/health` is answered *during* warmup.
 
 Implementing the shim then surfaced a third box-only fault: nginx with `error_log /dev/stderr` died at
 start as the unprivileged user, because `open("/dev/stderr")` is denied when the fd-2 target is

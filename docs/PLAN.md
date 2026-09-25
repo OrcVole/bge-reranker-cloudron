@@ -100,6 +100,8 @@ Effort tags: max (full reasoning + empirical verification), high, medium, low.
       Cloudron network) - exactly what an n8n HTTP node does.
 - [x] 7.2 docs/INTEGRATIONS.md: copy-paste config per app; the TEI-native vs Cohere `/v1/rerank`
       distinction; the ~60s proxy-timeout and localhost-only-within-container notes.
+      (Corrected 2026-09-25: the platform proxy does not cut at 60 s; the note now points at the
+      caller's client timeout.)
 
 ## Phase 8 - Documentation deliverables (max)
 

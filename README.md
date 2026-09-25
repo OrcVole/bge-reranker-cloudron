@@ -118,17 +118,19 @@ also makes the warmup faster and lighter.
 ### Startup and health
 
 TEI does not bind its port until model warmup finishes (tens of seconds on CPU). The package fronts
-TEI with a small nginx reverse proxy that answers `/health` immediately, so Cloudron sees the app
-healthy from the first second and does not restart it during warmup. While warming up, the app is
-healthy but `/rerank` returns `502` until the model is ready (typically well under a minute on first
-boot); after that it serves normally. TEI runs as the container's main process, so a real crash still
-stops and restarts the container.
+TEI with a small nginx reverse proxy that answers `/health` immediately, so the Cloudron dashboard
+shows the app healthy from the first second rather than unresponsive during warmup. (Cloudron's health
+check only reports status; it never restarts a container.) While warming up, the app is healthy but
+`/rerank` returns `502` until the model is ready (typically well under a minute on first boot); after
+that it serves normally. TEI runs as the container's main process, so a real crash still exits the
+container and it is restarted.
 
 ### Slow or large batches
 
-Cloudron's reverse proxy cuts a request at about 60 seconds. A very large batch of long passages on CPU
-can approach that. Keep batches modest, or call the app from another app on the same box over
-`http://<internal-name>:8080/rerank` to bypass the external proxy for long internal calls. See
+Cloudron's reverse proxy waits a long time for an app to answer (its read timeout is close to an hour),
+so it does not cut a slow rerank. A very large batch of long passages on CPU can still take long enough
+to trip the **caller's own** HTTP client timeout: many clients default to 60 seconds or less. If a call
+is cut at about 60 seconds, raise the client's timeout or keep batches modest. See
 [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md).
 
 ## Build and test

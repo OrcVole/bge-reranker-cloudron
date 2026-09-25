@@ -143,8 +143,8 @@ echo "==> [start] batch    : max-batch-tokens ${MAX_BATCH_TOKENS}"
 echo "==> [start] api key  : $( [[ -s "${KEYS_ENV}" ]] && echo 'present' || echo 'MISSING' )"
 
 # Start the immediate-health reverse proxy in the background. It answers /health 200 right away so
-# Cloudron sees the app healthy during TEI's ~45s warmup (TEI binds its port only after warmup, which
-# would otherwise restart-loop the container). Then exec TEI as the main process (PID 1) so signals
+# the Cloudron dashboard shows the app healthy during TEI's ~45s warmup (TEI binds its port only after
+# warmup; Cloudron's health check only reports status, it never restarts the container). Then exec TEI as the main process (PID 1) so signals
 # reach it and its exit stops the container; nginx is a child and dies with it.
 echo "==> [start] starting nginx health proxy on :${PUBLIC_PORT}"
 gosu cloudron:cloudron nginx -c /app/code/nginx.conf &

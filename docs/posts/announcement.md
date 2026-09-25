@@ -106,6 +106,10 @@ CPU-only) or arm64 (the TEI CPU image is amd64-only).
   nginx answers `/health` 200 from the first second and proxies everything else to TEI internally, with
   TEI still the main process so a real crash still restarts. The runtime smoke now asserts `/health` is
   answered *during* warmup, so the regression cannot return silently.
+  *Corrected 2026-09-25:* the diagnosis above is wrong. Cloudron's health check never restarts a
+  container; it only reports status. The loop was most likely an out-of-memory kill during warmup
+  (exit 137), fixed by raising the memory limit to 6 GiB in the same commit. The shim stays because it
+  keeps the dashboard showing the app healthy during warmup, but it was not what stopped the loop.
 - **nginx died on the box** with `error_log /dev/stderr` (EACCES, because the fd-2 target is root-owned
   and the app runs unprivileged) and silently never bound its port. Use the `error_log stderr` keyword
   (writes the inherited fd, no `open()`). Also podman-invisible.
@@ -137,6 +141,8 @@ community stack.
 versions-url channel (shared with TEI, Qdrant, Docling). And one worth a platform note: a backend that
 binds its port only after a long startup warmup will restart-loop, because the health check is refused
 during warmup; an immediate-health proxy works, but a documented startup grace would be friendlier.
+*Corrected 2026-09-25:* it does not restart-loop. Cloudron's health check only reports status, so a
+slow-binding backend just shows as not responding until it is ready; our loop was an out-of-memory kill.
 
 ---
 
@@ -145,8 +151,9 @@ during warmup; an immediate-health proxy works, but a documented startup grace w
 A few low-effort things that help packagers a lot:
 
 - **Bind the listener (and answer `/health`) before warmup, or document that it comes up after.** A
-  platform that health-checks during startup restart-loops the container otherwise, and the failure is a
-  silent refused connection.
+  platform that health-checks during startup otherwise reports the app as down, and the failure is a
+  silent refused connection. (Corrected 2026-09-25: this originally said such a platform
+  restart-loops the container; Cloudron does not.)
 - **A memory-aware default `max_batch_tokens`.** The current default allocates gigabytes of attention
   scratch during warmup for a long-context model on CPU and OOM-kills first boot with no clear error.
 - **Lower the log level of the ORT-backend fallback.** TEI logs `ERROR ... onnx/model.onnx does not exist`

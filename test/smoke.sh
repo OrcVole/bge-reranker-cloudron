@@ -39,7 +39,7 @@ echo "== run (Cloudron-style: root -> start.sh -> gosu cloudron) =="
 "$ENGINE" run -d --name "$NAME" --memory=6g -v "$DATADIR":/app/data:Z -p 127.0.0.1:$PORT:8080 "$IMG" >/dev/null 2>&1
 
 # The nginx health shim must answer /health 200 during TEI warmup, before TEI binds its port and logs
-# "Ready". This is the regression that restart-looped the app on the box; assert it is fixed.
+# "Ready", so the dashboard shows the app healthy during warmup; assert it does.
 hp=""
 for i in $(seq 1 25); do
   [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://127.0.0.1:$PORT/health 2>/dev/null)" = 200 ] && { hp=$i; break; }

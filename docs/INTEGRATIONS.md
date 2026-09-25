@@ -133,13 +133,18 @@ pipeline does.
 ## Networking and the proxy timeout
 
 Cross-app calls on the same box go through each app's external `https://` domain and the platform
-reverse proxy, which **cuts a request at about 60 seconds** and is not per-app tunable. Reranking a
-large batch of long passages on CPU can approach that. Mitigations:
+reverse proxy. That proxy does **not** cut slow requests at 60 seconds: its read timeout for app
+traffic is 3500 seconds (close to an hour), and a probe that stayed silent for 150 seconds still got
+its 200. If a rerank call is cut at about 60 seconds, the cut is almost certainly the **caller's own**
+HTTP client timeout (many default to 60 seconds or less), or another proxy in the caller's path.
+Reranking a large batch of long passages on CPU can take that long. Mitigations:
 
-- Keep batches modest. Reranking a shortlist of, say, 20 to 50 passages of a few hundred tokens each is
-  well under the limit. Split very large candidate sets into several calls.
+- Raise the timeout on the calling side (the HTTP node, SDK or client library) if large batches are
+  expected.
+- Keep batches modest. Reranking a shortlist of, say, 20 to 50 passages of a few hundred tokens each
+  returns quickly. Split very large candidate sets into several calls.
 - The default `max_batch_tokens` (4096) caps a single request's work; raising it for long passages also
-  raises latency, so watch the 60-second ceiling.
+  raises latency, so check it against your client's timeout.
 - The `localhost`/`127.0.0.1:8080` bypass applies only to code running **inside the reranker's own
   container**, not to other apps. Other apps must use the external domain.
 
